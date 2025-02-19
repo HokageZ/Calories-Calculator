@@ -4,35 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حاسبة استبدال السعرات الحرارية</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: right; direction: rtl; margin: 20px; }
-        label, select, input { display: block; margin: 10px 0; }
-        select, input { padding: 5px; }
-        button { margin-top: 10px; padding: 5px 10px; }
-        #result { margin-top: 20px; font-weight: bold; }
-    </style>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>حاسبة استبدال السعرات الحرارية</h1>
-    <label for="categorySelect">اختر نوع المجموعة الغذائية:</label>
-    <select id="categorySelect" onchange="updateFoodOptions()">
-        <option value="high-carb">عالي الكارب</option>
-        <option value="high-protein">عالي البروتين</option>
-        <option value="high-fat">عالي الدهون</option>
-    </select>
+    <div class="container">
+        <h1>حاسبة استبدال السعرات الحرارية</h1>
 
-    <label for="food1Select">اختر نوع الطعام الأول:</label>
-    <select id="food1Select"></select>
+        <label for="categorySelect">اختر نوع المجموعة الغذائية:</label>
+        <select id="categorySelect" onchange="updateFoodOptions()">
+            <option value="high-carb">عالي الكارب</option>
+            <option value="high-protein">عالي البروتين</option>
+            <option value="high-fat">عالي الدهون</option>
+        </select>
 
-    <label for="weightInput">أدخل الوزن (بالغرام):</label>
-    <input type="number" id="weightInput" placeholder="مثال: 100" oninput="validateInput()">
+        <label for="food1Select">اختر نوع الطعام الأول:</label>
+        <select id="food1Select"></select>
 
-    <label for="food2Select">اختر نوع الطعام الثاني (البديل):</label>
-    <select id="food2Select"></select>
+        <label for="weightInput">أدخل الوزن (بالغرام):</label>
+        <input type="number" id="weightInput" placeholder="مثال: 100" oninput="validateInput()">
 
-    <button onclick="calculateEquivalentWeight()">احسب</button>
+        <label for="food2Select">اختر نوع الطعام الثاني (البديل):</label>
+        <select id="food2Select"></select>
 
-    <div id="result"></div>
+        <button onclick="calculateEquivalentWeight()">احسب</button>
+
+        <div id="result"></div>
+    </div>
 
     <script>
         const foodData = {
@@ -152,7 +150,6 @@
 
         document.addEventListener("DOMContentLoaded", function() {
             updateFoodOptions();
-        });
-    </script>
+        });    </script>
 </body>
 </html>

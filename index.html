@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة استبدال السعرات الحرارية</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: right; direction: rtl; margin: 20px; }
+        label, select, input { display: block; margin: 10px 0; }
+        select, input { padding: 5px; }
+        button { margin-top: 10px; padding: 5px 10px; }
+        #result { margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>حاسبة استبدال السعرات الحرارية</h1>
+    <label for="categorySelect">اختر نوع المجموعة الغذائية:</label>
+    <select id="categorySelect" onchange="updateFoodOptions()">
+        <option value="high-carb">عالي الكارب</option>
+        <option value="high-protein">عالي البروتين</option>
+        <option value="high-fat">عالي الدهون</option>
+    </select>
+
+    <label for="food1Select">اختر نوع الطعام الأول:</label>
+    <select id="food1Select"></select>
+
+    <label for="weightInput">أدخل الوزن (بالغرام):</label>
+    <input type="number" id="weightInput" placeholder="مثال: 100" oninput="validateInput()">
+
+    <label for="food2Select">اختر نوع الطعام الثاني (البديل):</label>
+    <select id="food2Select"></select>
+
+    <button onclick="calculateEquivalentWeight()">احسب</button>
+
+    <div id="result"></div>
+
+    <script>
+        const foodData = {
+            "high-carb": [
+                { name: "رز بني", calories: 111 },
+                { name: "رز بسمتى", calories: 129 },
+                { name: "رز ابيض", calories: 130 },
+                { name: "عيش بلدى", calories: 265 },
+                { name: "عيش الفينو", calories: 318 },
+                { name: "عيش توست", calories: 313 },
+                { name: "اسباجيتي", calories: 158 },
+                { name: "حمص", calories: 364 },
+                { name: "زبيب", calories: 116 },
+                { name: "مربى فرارلة", calories: 278 },
+                { name: "عيش الشوفان", calories: 269 },
+                { name: "شوفان", calories: 389 },
+                { name: "سكر", calories: 387 },
+                { name: "عسل نحل", calories: 304 },
+                { name: "تمر", calories: 282 },
+                { name: "بطاطس مقلية", calories: 312 },
+                { name: "بطاطس", calories: 77 },
+                { name: "بطاطا", calories: 86 },
+                { name: "فول", calories: 347 },
+                { name: "عدس", calories: 116 },
+                { name: "بازلاء", calories: 81 },
+                { name: "ذرة", calories: 96 },
+                { name: "ثوم", calories: 149 }
+            ],
+            "high-protein": [
+                { name: "صدر دجاج", calories: 165 },
+                { name: "لحم بقري", calories: 250 },
+                { name: "ديك رومي", calories: 189 },
+                { name: "دجاج مقلى", calories: 246 },
+                { name: "كفتة", calories: 243 },
+                { name: "تونة", calories: 132 },
+                { name: "كبدة", calories: 165 },
+                { name: "جمبري", calories: 119 },
+                { name: "بيض مسلوق", calories: 155 },
+                { name: "وراك فراخ", calories: 179 },
+                { name: "بيض اومليت", calories: 154 },
+                { name: "سمك بورى", calories: 117 },
+                { name: "سمك بلطى", calories: 129 },
+                { name: "سمك روسى", calories: 305 },
+                { name: "سمك السالمون", calories: 206 },
+                { name: "لحمة ضاني (خروف)", calories: 294 },
+                { name: "جبنة بيضاء", calories: 310 },
+                { name: "جبنة رومي", calories: 407 },
+                { name: "لب سورى", calories: 584 },
+                { name: "لب اصفر", calories: 557 },
+                { name: "لب ابيض", calories: 446 },
+                { name: "جبنة قريش", calories: 98 }
+            ],
+            "high-fat": [
+                { name: "افوكادو", calories: 160 },
+                { name: "جوز الهند", calories: 354 },
+                { name: "فول سوداني", calories: 567 },
+                { name: "فستق", calories: 562 },
+                { name: "عين الجمل", calories: 654 },
+                { name: "بندق", calories: 628 },
+                { name: "زبدة", calories: 717 },
+                { name: "طحينة", calories: 594 },
+                { name: "مايونيز", calories: 680 },
+                { name: "زبدة الفول السوداني", calories: 588 },
+                { name: "زيت الذره", calories: 900 },
+                { name: "زيت الزيتون", calories: 884 },
+                { name: "زيت الكتان", calories: 884 },
+                { name: "زيت درار الشمس", calories: 884 },
+                { name: "كاتشب", calories: 112 },
+                { name: "مستردة", calories: 60 },
+                { name: "صلصة طماطم", calories: 29 }
+            ]
+        };
+
+        function updateFoodOptions() {
+            let category = document.getElementById('categorySelect').value;
+            let food1Select = document.getElementById('food1Select');
+            let food2Select = document.getElementById('food2Select');
+
+            food1Select.innerHTML = "";
+            food2Select.innerHTML = "";
+
+            foodData[category].forEach(food => {
+                let option1 = new Option(food.name, food.calories);
+                let option2 = new Option(food.name, food.calories);
+                food1Select.add(option1);
+                food2Select.add(option2);
+            });
+        }
+
+        function validateInput() {
+            let weightInput = document.getElementById('weightInput');
+            let value = weightInput.value.trim();
+            if (!/^[0-9]+(\.[0-9]*)?$/.test(value) || parseFloat(value) <= 0) {
+                weightInput.setCustomValidity("يرجى إدخال رقم صحيح أكبر من الصفر.");
+            } else {
+                weightInput.setCustomValidity("");
+            }
+        }
+
+        function calculateEquivalentWeight() {
+            const food1Select = document.getElementById('food1Select');
+            const food2Select = document.getElementById('food2Select');
+            const weightInput = document.getElementById('weightInput');
+
+            let caloriesPer100g1 = Number(food1Select.value);
+            let caloriesPer100g2 = Number(food2Select.value);
+            let weight1 = Number(weightInput.value);
+
+            if (isNaN(caloriesPer100g1) || isNaN(caloriesPer100g2) || isNaN(weight1) || weight1 <= 0) {
+                document.getElementById('result').innerText = 'الرجاء اختيار الطعامين وإدخال وزن صحيح.';
+                return;
+            }
+
+            let equivalentWeight = (weight1 * caloriesPer100g1) / caloriesPer100g2;
+            document.getElementById('result').innerText = "يجب تناول " + equivalentWeight.toFixed(2) + " جرام من الطعام البديل لمعادلة السعرات الحرارية.";
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            updateFoodOptions();
+        });
+    </script>
+</body>
+</html>

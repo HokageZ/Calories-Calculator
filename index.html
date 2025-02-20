@@ -6,181 +6,235 @@
     <title>حاسبة استبدال السعرات الحرارية</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body[lang='en'] {
+            direction: ltr;
+            text-align: center;
+        }
+        #langSwitch {
+            width: 40px;
+            height: 40px;
+            font-size: 14px;
+            padding: 5px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>حاسبة استبدال السعرات الحرارية</h1>
-
-        <label for="categorySelect">اختر نوع المجموعة الغذائية:</label>
+        <button id="langSwitch" data-en="Ar" data-ar="En">En</button>
+        
+        <h1 id="title">حاسبة استبدال السعرات الحرارية</h1>
+        
+        <label for="categorySelect" id="categoryLabel">اختر نوع المجموعة الغذائية:</label>
         <select id="categorySelect" onchange="updateFoodOptions()">
-            <option value="Fruits">فواكه</option>
-            <option value="Fats">دهون</option>
-            <option value="Carbohydrates">نشويات</option>
-            <option value="Proteins">لحوم</option>
-            <option value="Vegetables">خضراوات</option>
+            <option value="Fruits" data-en="Fruits" data-ar="فواكه">فواكه</option>
+            <option value="Fats" data-en="Fats" data-ar="دهون">دهون</option>
+            <option value="Carbohydrates" data-en="Carbohydrates" data-ar="نشويات">نشويات</option>
+            <option value="Proteins" data-en="Proteins" data-ar="لحوم">لحوم</option>
+            <option value="Vegetables" data-en="Vegetables" data-ar="خضراوات">خضراوات</option>
         </select>
 
-        <label for="food1Select">اختر نوع الطعام الأول:</label>
+        <label for="food1Select" id="food1Label">اختر نوع الطعام الأول:</label>
         <select id="food1Select"></select>
 
-        <label for="weightInput">أدخل الوزن (بالغرام):</label>
-        <input type="number" id="weightInput" placeholder="مثال: 100" oninput="validateInput()">
+        <label for="weightInput" id="weightLabel">أدخل الوزن (بالغرام):</label>
+        <input type="number" id="weightInput" placeholder="100" oninput="validateInput()">
 
-        <label for="food2Select">اختر نوع الطعام الثاني (البديل):</label>
+        <label for="food2Select" id="food2Label">اختر نوع الطعام الثاني (البديل):</label>
         <select id="food2Select"></select>
 
-        <button onclick="calculateEquivalentWeight()">احسب</button>
-
+        <button onclick="calculateEquivalentWeight()" id="calculateBtn">احسب</button>
         <div id="result"></div>
     </div>
 
     <script>
-        const foodData = {
-            "Fruits": [
-                { "name": "تفاح", "calories": 52 },
-                { "name": "موز", "calories": 89 },
-                { "name": "بطيخ", "calories": 30 },
-                { "name": "فراولة", "calories": 32 },
-                { "name": "توت اسود", "calories": 43 },
-                { "name": "اناناس", "calories": 50 },
-                { "name": "يوسفي", "calories": 53 },
-                { "name": "كيوي", "calories": 61 },
-                { "name": "برتقال", "calories": 47 },
-                { "name": "عنب احمر", "calories": 67 },
-                { "name": "خوخ", "calories": 39 },
-                { "name": "مانجا", "calories": 60 },
-                { "name": "جوافة", "calories": 68 },
-                { "name": "بلح", "calories": 282 },
-                { "name": "مشمش", "calories": 48 },
-                { "name": "تين شوكي", "calories": 41 },
-                { "name": "كاكا", "calories": 127 },
-                { "name": "شمام", "calories": 34 },
-                { "name": "كمثرى", "calories": 57 },
-                { "name": "بلح مجدول", "calories": 277 },
-                { "name": "رمان", "calories": 83 },
-                { "name": "زبيب", "calories": 299 },
-                { "name": "ليمون", "calories": 29 },
-                { "name": "افوكادو", "calories": 160 },
-                { "name": "برقوق", "calories": 46 },
-                { "name": "نكتارين", "calories": 44 },
-                { "name": "عناب", "calories": 79 },
-                { "name": "جوز الهند", "calories": 354 },
-                { "name": "جريب فروت", "calories": 42 },
-                { "name": "كنتالوب", "calories": 34 },
-                { "name": "عصير قصب", "calories": 269 },
-                { "name": "يقطين", "calories": 26 }
-            ],
-            "Fats": [
-                { "name": "فول سوداني", "calories": 567 },
-                { "name": "فستق", "calories": 562 },
-                { "name": "عين الجمل", "calories": 654 },
-                { "name": "بندق", "calories": 628 },
-                { "name": "زبدة", "calories": 717 },
-                { "name": "طحينة", "calories": 594 },
-                { "name": "مايونيز", "calories": 680 },
-                { "name": "جبنة بيضاء", "calories": 310 },
-                { "name": "جبنة رومي", "calories": 407 },
-                { "name": "لب سورى", "calories": 584 },
-                { "name": "لب اصفر", "calories": 557 },
-                { "name": "لب ابيض", "calories": 446 },
-                { "name": "كاجو", "calories": 553 },
-                { "name": "زبدة الفول السوداني", "calories": 588 },
-                { "name": "زيت الذره", "calories": 900 },
-                { "name": "زيت الزيتون", "calories": 884 },
-                { "name": "زيت الكتان", "calories": 884 },
-                { "name": "زيت درار الشمس", "calories": 884 },
-                { "name": "لبن نصف دسم", "calories": 50 },
-                { "name": "لبن كامل الدسم", "calories": 42 },
-                { "name": "جبنة نستو", "calories": 239 },
-                { "name": "زبادى كامل الدسم", "calories": 61 },
-                { "name": "زبادي مراعي تريتس", "calories": 128 },
-                { "name": "زبادي قليل الدسم", "calories": 58 },
-                { "name": "لبن خالي الدسم", "calories": 70 }
-            ],
-            "Carbohydrates": [
-                { "name": "رز بني", "calories": 111 },
-                { "name": "رز بسمتى", "calories": 129 },
-                { "name": "رز ابيض", "calories": 130 },
-                { "name": "بقصماط", "calories": 407 },
-                { "name": "عيش بلدى", "calories": 265 },
-                { "name": "العيش الفينو", "calories": 318 },
-                { "name": "عيش توست", "calories": 313 },
-                { "name": "اسباجيتي", "calories": 158 },
-                { "name": "حمص", "calories": 364 },
-                { "name": "زبيب", "calories": 116 },
-                { "name": "مربى فرارلة", "calories": 278 },
-                { "name": "طعمية", "calories": 333 },
-                { "name": "عيش الشوفان", "calories": 269 },
-                { "name": "تومية", "calories": 150 },
-                { "name": "خيار مخلل", "calories": 11 },
-                { "name": "شوفان", "calories": 389 },
-                { "name": "كاتشب", "calories": 112 },
-                { "name": "سكر", "calories": 387 },
-                { "name": "مستردة", "calories": 60 },
-                { "name": "صلصة طماطم", "calories": 29 },
-                { "name": "عسل نحل", "calories": 304 },
-                { "name": "بطاطس مقلية", "calories": 312 },
-                { "name": "تمر", "calories": 282 }
-            ],
-            "Proteins": [
-                { "name": "ديك رومي", "calories": 189 },
-                { "name": "جبنة قريش", "calories": 98 },
-                { "name": "دجاج مقلى", "calories": 246 },
-                { "name": "كفتة", "calories": 243 },
-                { "name": "لحمة بقري", "calories": 250 },
-                { "name": "تونة", "calories": 132 },
-                { "name": "كبدة", "calories": 165 },
-                { "name": "جمبري", "calories": 119 },
-                { "name": "بيض مسلوق", "calories": 155 },
-                { "name": "وراك فراخ", "calories": 179 },
-                { "name": "بيض اومليت", "calories": 154 },
-                { "name": "صدور فراخ", "calories": 165 },
-                { "name": "سمك بورى", "calories": 117 },
-                { "name": "سمك بلطى", "calories": 129 },
-                { "name": "سمك روسى", "calories": 305 },
-                { "name": "سمك السالمون", "calories": 206 },
-                { "name": "لحمة ضاني (خروف)", "calories": 294 }
-            ],
-            "Vegetables": [
-                { "name": "عدس", "calories": 116 },
-                { "name": "بازلاء", "calories": 81 },
-                { "name": "بطاطس", "calories": 77 },
-                { "name": "بطاطا", "calories": 86 },
-                { "name": "فول", "calories": 347 },
-                { "name": "كوسة", "calories": 17 },
-                { "name": "جزر", "calories": 41 },
-                { "name": "بصل", "calories": 40 },
-                { "name": "سبانخ", "calories": 23 },
-                { "name": "ملوخيه", "calories": 66 },
-                { "name": "بامية", "calories": 33 },
-                { "name": "فاصوليا خضراء", "calories": 31 },
-                { "name": "فاصوليا بيضاء", "calories": 67 },
-                { "name": "خيار", "calories": 15 },
-                { "name": "طماطم", "calories": 18 },
-                { "name": "الخس", "calories": 15 },
-                { "name": "الجرجير", "calories": 29 },
-                { "name": "القلقاس", "calories": 112 },
-                { "name": "الفلفل", "calories": 40 },
-                { "name": "الذرة", "calories": 96 },
-                { "name": "الثوم", "calories": 149 },
-                { "name": "الشبت", "calories": 43 },
-                { "name": "الباذنجان", "calories": 25 },
-                { "name": "البقدونس", "calories": 36 },
-                { "name": "ماشروم", "calories": 22 }
-            ]
+        const translations = {
+            "ar": {
+                "title": "حاسبة استبدال السعرات الحرارية",
+                "categoryLabel": "اختر نوع المجموعة الغذائية:",
+                "food1Label": "اختر نوع الطعام الأول:",
+                "weightLabel": "أدخل الوزن (بالغرام):",
+                "food2Label": "اختر نوع الطعام الثاني (البديل):",
+                "calculateBtn": "احسب",
+                "langSwitch": "En"
+            },
+            "en": {
+                "title": "Calorie Replacement Calculator",
+                "categoryLabel": "Select food category:",
+                "food1Label": "Select the first food type:",
+                "weightLabel": "Enter weight (grams):",
+                "food2Label": "Select the second food type (alternative):",
+                "calculateBtn": "Calculate",
+                "langSwitch": "Ar"
+            }
         };
+
+        let currentLang = "ar";
+
+        function switchLanguage() {
+            currentLang = currentLang === "ar" ? "en" : "ar";
+            document.documentElement.lang = currentLang;
+            document.body.lang = currentLang;
+            document.getElementById("title").innerText = translations[currentLang]["title"];
+            document.getElementById("categoryLabel").innerText = translations[currentLang]["categoryLabel"];
+            document.getElementById("food1Label").innerText = translations[currentLang]["food1Label"];
+            document.getElementById("weightLabel").innerText = translations[currentLang]["weightLabel"];
+            document.getElementById("food2Label").innerText = translations[currentLang]["food2Label"];
+            document.getElementById("calculateBtn").innerText = translations[currentLang]["calculateBtn"];
+            document.getElementById("langSwitch").innerText = translations[currentLang]["langSwitch"];
+            document.querySelectorAll("#categorySelect option").forEach(option => {
+                option.innerText = option.dataset[currentLang];
+            });
+            updateFoodOptions();
+        }
+
+        document.getElementById("langSwitch").addEventListener("click", switchLanguage);
         
         function updateFoodOptions() {
             let category = document.getElementById('categorySelect').value;
             let food1Select = document.getElementById('food1Select');
             let food2Select = document.getElementById('food2Select');
-
             food1Select.innerHTML = "";
             food2Select.innerHTML = "";
-
+            
+            const foodData = {
+                "Fruits": [
+                    { "ar": "تفاح", "en": "Apple", "calories": 52 },
+                    { "ar": "موز", "en": "Banana", "calories": 89 },
+                    { "ar": "بطيخ", "en": "Watermelon", "calories": 30 },
+                    { "ar": "فراولة", "en": "Strawberry", "calories": 32 },
+                    { "ar": "توت اسود", "en": "Blackberry", "calories": 43 },
+                    { "ar": "اناناس", "en": "Pineapple", "calories": 50 },
+                    { "ar": "يوسفي", "en": "Tangerine", "calories": 53 },
+                    { "ar": "كيوي", "en": "Kiwi", "calories": 61 },
+                    { "ar": "برتقال", "en": "Orange", "calories": 47 },
+                    { "ar": "عنب احمر", "en": "Red Grapes", "calories": 67 },
+                    { "ar": "خوخ", "en": "Peach", "calories": 39 },
+                    { "ar": "مانجا", "en": "Mango", "calories": 60 },
+                    { "ar": "جوافة", "en": "Guava", "calories": 68 },
+                    { "ar": "بلح", "en": "Dates", "calories": 282 },
+                    { "ar": "مشمش", "en": "Apricot", "calories": 48 },
+                    { "ar": "تين شوكي", "en": "Prickly Pear", "calories": 41 },
+                    { "ar": "كاكا", "en": "Persimmon", "calories": 127 },
+                    { "ar": "شمام", "en": "Cantaloupe", "calories": 34 },
+                    { "ar": "كمثرى", "en": "Pear", "calories": 57 },
+                    { "ar": "بلح مجدول", "en": "Medjool Dates", "calories": 277 },
+                    { "ar": "رمان", "en": "Pomegranate", "calories": 83 },
+                    { "ar": "زبيب", "en": "Raisins", "calories": 299 },
+                    { "ar": "ليمون", "en": "Lemon", "calories": 29 },
+                    { "ar": "افوكادو", "en": "Avocado", "calories": 160 },
+                    { "ar": "برقوق", "en": "Plum", "calories": 46 },
+                    { "ar": "نكتارين", "en": "Nectarine", "calories": 44 },
+                    { "ar": "عناب", "en": "Jujube", "calories": 79 },
+                    { "ar": "جوز الهند", "en": "Coconut", "calories": 354 },
+                    { "ar": "جريب فروت", "en": "Grapefruit", "calories": 42 },
+                    { "ar": "كنتالوب", "en": "Cantaloupe", "calories": 34 },
+                    { "ar": "عصير قصب", "en": "Sugarcane Juice", "calories": 269 },
+                    { "ar": "يقطين", "en": "Pumpkin", "calories": 26 }
+                ],
+                "Fats": [
+                    { "ar": "فول سوداني", "en": "Peanuts", "calories": 567 },
+                    { "ar": "فستق", "en": "Pistachios", "calories": 562 },
+                    { "ar": "عين الجمل", "en": "Walnuts", "calories": 654 },
+                    { "ar": "بندق", "en": "Hazelnuts", "calories": 628 },
+                    { "ar": "زبدة", "en": "Butter", "calories": 717 },
+                    { "ar": "طحينة", "en": "Tahini", "calories": 594 },
+                    { "ar": "مايونيز", "en": "Mayonnaise", "calories": 680 },
+                    { "ar": "جبنة بيضاء", "en": "White Cheese", "calories": 310 },
+                    { "ar": "جبنة رومي", "en": "Rumi Cheese", "calories": 407 },
+                    { "ar": "لب سورى", "en": "Syrian Cheese", "calories": 584 },
+                    { "ar": "لب اصفر", "en": "Yellow Cheese", "calories": 557 },
+                    { "ar": "لب ابيض", "en": "White Cheese", "calories": 446 },
+                    { "ar": "كاجو", "en": "Cashews", "calories": 553 },
+                    { "ar": "زبدة الفول السوداني", "en": "Peanut Butter", "calories": 588 },
+                    { "ar": "زيت الذره", "en": "Corn Oil", "calories": 900 },
+                    { "ar": "زيت الزيتون", "en": "Olive Oil", "calories": 884 },
+                    { "ar": "زيت الكتان", "en": "Flaxseed Oil", "calories": 884 },
+                    { "ar": "زيت درار الشمس", "en": "Sunflower Oil", "calories": 884 },
+                    { "ar": "لبن نصف دسم", "en": "Semi-Skimmed Milk", "calories": 50 },
+                    { "ar": "لبن كامل الدسم", "en": "Whole Milk", "calories": 42 },
+                    { "ar": "جبنة نستو", "en": "Nesto Cheese", "calories": 239 },
+                    { "ar": "زبادى كامل الدسم", "en": "Full-Fat Yogurt", "calories": 61 },
+                    { "ar": "زبادي مراعي تريتس", "en": "Marai Treats Yogurt", "calories": 128 },
+                    { "ar": "زبادي قليل الدسم", "en": "Low-Fat Yogurt", "calories": 58 },
+                    { "ar": "لبن خالي الدسم", "en": "Skimmed Milk", "calories": 70 }
+                ],
+                "Carbohydrates": [
+                    { "ar": "رز بني", "en": "Brown Rice", "calories": 111 },
+                    { "ar": "رز بسمتى", "en": "Basmati Rice", "calories": 129 },
+                    { "ar": "رز ابيض", "en": "White Rice", "calories": 130 },
+                    { "ar": "بقصماط", "en": "Biscuits", "calories": 407 },
+                    { "ar": "عيش بلدى", "en": "Baladi Bread", "calories": 265 },
+                    { "ar": "العيش الفينو", "en": "Fino Bread", "calories": 318 },
+                    { "ar": "عيش توست", "en": "Toast Bread", "calories": 313 },
+                    { "ar": "اسباجيتي", "en": "Spaghetti", "calories": 158 },
+                    { "ar": "حمص", "en": "Chickpeas", "calories": 364 },
+                    { "ar": "زبيب", "en": "Raisins", "calories": 116 },
+                    { "ar": "مربى فرارلة", "en": "Strawberry Jam", "calories": 278 },
+                    { "ar": "طعمية", "en": "Falafel", "calories": 333 },
+                    { "ar": "عيش الشوفان", "en": "Oat Bread", "calories": 269 },
+                    { "ar": "تومية", "en": "Tomato Paste", "calories": 150 },
+                    { "ar": "خيار مخلل", "en": "Pickled Cucumber", "calories": 11 },
+                    { "ar": "شوفان", "en": "Oats", "calories": 389 },
+                    { "ar": "كاتشب", "en": "Ketchup", "calories": 112 },
+                    { "ar": "سكر", "en": "Sugar", "calories": 387 },
+                    { "ar": "مستردة", "en": "Mustard", "calories": 60 },
+                    { "ar": "صلصة طماطم", "en": "Tomato Sauce", "calories": 29 },
+                    { "ar": "عسل نحل", "en": "Honey", "calories": 304 },
+                    { "ar": "بطاطس مقلية", "en": "French Fries", "calories": 312 },
+                    { "ar": "تمر", "en": "Dates", "calories": 282 }
+                ],
+                "Proteins": [
+                    { "ar": "ديك رومي", "en": "Turkey", "calories": 189 },
+                    { "ar": "جبنة قريش", "en": "Cottage Cheese", "calories": 98 },
+                    { "ar": "دجاج مقلى", "en": "Fried Chicken", "calories": 246 },
+                    { "ar": "كفتة", "en": "Kofta", "calories": 243 },
+                    { "ar": "لحمة بقري", "en": "Beef", "calories": 250 },
+                    { "ar": "تونة", "en": "Tuna", "calories": 132 },
+                    { "ar": "كبدة", "en": "Liver", "calories": 165 },
+                    { "ar": "جمبري", "en": "Shrimp", "calories": 119 },
+                    { "ar": "بيض مسلوق", "en": "Boiled Egg", "calories": 155 },
+                    { "ar": "وراك فراخ", "en": "Chicken Wings", "calories": 179 },
+                    { "ar": "بيض اومليت", "en": "Omelette", "calories": 154 },
+                    { "ar": "صدور فراخ", "en": "Chicken Breast", "calories": 165 },
+                    { "ar": "سمك بورى", "en": "Bouri Fish", "calories": 117 },
+                    { "ar": "سمك بلطى", "en": "Tilapia Fish", "calories": 129 },
+                    { "ar": "سمك روسى", "en": "Russian Fish", "calories": 305 },
+                    { "ar": "سمك السالمون", "en": "Salmon", "calories": 206 },
+                    { "ar": "لحمة ضاني (خروف)", "en": "Lamb Meat", "calories": 294 }
+                ],
+                "Vegetables": [
+                    { "ar": "عدس", "en": "Lentils", "calories": 116 },
+                    { "ar": "بازلاء", "en": "Peas", "calories": 81 },
+                    { "ar": "بطاطس", "en": "Potatoes", "calories": 77 },
+                    { "ar": "بطاطا", "en": "Sweet Potatoes", "calories": 86 },
+                    { "ar": "فول", "en": "Fava Beans", "calories": 347 },
+                    { "ar": "كوسة", "en": "Zucchini", "calories": 17 },
+                    { "ar": "جزر", "en": "Carrots", "calories": 41 },
+                    { "ar": "بصل", "en": "Onion", "calories": 40 },
+                    { "ar": "سبانخ", "en": "Spinach", "calories": 23 },
+                    { "ar": "ملوخيه", "en": "Molokhia", "calories": 66 },
+                    { "ar": "بامية", "en": "Okra", "calories": 33 },
+                    { "ar": "فاصوليا خضراء", "en": "Green Beans", "calories": 31 },
+                    { "ar": "فاصوليا بيضاء", "en": "White Beans", "calories": 67 },
+                    { "ar": "خيار", "en": "Cucumber", "calories": 15 },
+                    { "ar": "طماطم", "en": "Tomato", "calories": 18 },
+                    { "ar": "الخس", "en": "Lettuce", "calories": 15 },
+                    { "ar": "الجرجير", "en": "Arugula", "calories": 29 },
+                    { "ar": "القلقاس", "en": "Taro", "calories": 112 },
+                    { "ar": "الفلفل", "en": "Bell Pepper", "calories": 40 },
+                    { "ar": "الذرة", "en": "Corn", "calories": 96 },
+                    { "ar": "الثوم", "en": "Garlic", "calories": 149 },
+                    { "ar": "الشبت", "en": "Dill", "calories": 43 },
+                    { "ar": "الباذنجان", "en": "Eggplant", "calories": 25 },
+                    { "ar": "البقدونس", "en": "Parsley", "calories": 36 },
+                    { "ar": "ماشروم", "en": "Mushroom", "calories": 22 }
+                ]
+            };    
+            
             foodData[category].forEach(food => {
-                let option1 = new Option(food.name, food.calories);
-                let option2 = new Option(food.name, food.calories);
+                let option1 = new Option(food[currentLang], food.calories);
+                let option2 = new Option(food[currentLang], food.calories);
                 food1Select.add(option1);
                 food2Select.add(option2);
             });
@@ -190,7 +244,7 @@
             let weightInput = document.getElementById('weightInput');
             let value = weightInput.value.trim();
             if (!/^[0-9]+(\.[0-9]*)?$/.test(value) || parseFloat(value) <= 0) {
-                weightInput.setCustomValidity("يرجى إدخال رقم صحيح أكبر من الصفر.");
+                weightInput.setCustomValidity(currentLang === "ar" ? "يرجى إدخال رقم صحيح أكبر من الصفر." : "Please enter a valid number greater than zero.");
             } else {
                 weightInput.setCustomValidity("");
             }
@@ -206,16 +260,17 @@
             let weight1 = Number(weightInput.value);
 
             if (isNaN(caloriesPer100g1) || isNaN(caloriesPer100g2) || isNaN(weight1) || weight1 <= 0) {
-                document.getElementById('result').innerText = 'الرجاء اختيار الطعامين وإدخال وزن صحيح.';
+                document.getElementById('result').innerText = currentLang === "ar" ? 'الرجاء اختيار الطعامين وإدخال وزن صحيح.' : 'Please select both foods and enter a valid weight.';
                 return;
             }
 
             let equivalentWeight = (weight1 * caloriesPer100g1) / caloriesPer100g2;
-            document.getElementById('result').innerText = "يجب تناول " + equivalentWeight.toFixed(2) + " جرام من الطعام البديل لمعادلة السعرات الحرارية.";
+            document.getElementById('result').innerText = currentLang === "ar" ? "يجب تناول " + equivalentWeight.toFixed(2) + " جرام من الطعام البديل لمعادلة السعرات الحرارية." : "You should eat " + equivalentWeight.toFixed(2) + " grams of the alternative food to match the calories.";
         }
 
         document.addEventListener("DOMContentLoaded", function() {
             updateFoodOptions();
-        });    </script>
+        });
+    </script>
 </body>
 </html>

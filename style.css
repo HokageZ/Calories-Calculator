@@ -39,7 +39,7 @@ h1 {
     font-size: 24px;
     font-weight: 700;
     margin-bottom: 10px;
-    color: #32cd32;
+    color: #bcf926;
     animation: slideDown 1s ease-in-out;
 }
 
@@ -86,7 +86,7 @@ input::placeholder {
 }
 
 button {
-    background: #32cd32;
+    background: #92c510;
     color: #222;
     font-weight: bold;
     cursor: pointer;
@@ -96,7 +96,7 @@ button {
 }
 
 button:hover {
-    background: #228b22;
+    background: #78a013;
     transform: scale(1.05);
     color: #fff;
     box-shadow: 0 5px 8px rgba(0, 0, 0, 0.2);

@@ -52,30 +52,10 @@ const translations = {
     foodData[category].forEach(food => {
       let option1 = new Option(food[currentLang], food.calories);
       let option2 = new Option(food[currentLang], food.calories);
-      if (category === "All") {
-        // Store the food group in a data attribute.
-        option1.dataset.group = food.group;
-        option2.dataset.group = food.group;
-      }
+
       food1Select.add(option1);
       food2Select.add(option2);
     });
-  
-    if (category === "All") {
-      // When a food is selected in the first dropdown,
-      // filter the second dropdown to only show foods from the same group.
-      food1Select.addEventListener('change', function() {
-        let selectedGroup = this.options[this.selectedIndex].dataset.group;
-        food2Select.innerHTML = "";
-        foodData["All"].forEach(food => {
-          if (food.group === selectedGroup) {
-            let option = new Option(food[currentLang], food.calories);
-            option.dataset.group = food.group;
-            food2Select.add(option);
-          }
-        });
-      });
-    }
   }
   
   function validateInput() {
